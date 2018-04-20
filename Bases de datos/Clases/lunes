@@ -1,0 +1,58 @@
+CREATE GLOBAL TEMPORARY TABLE tablaTemporal (
+  Nombre varchar(100),
+  Email varchar(150),
+  aPaterno varchar(150)
+) ON COMMIT DELETE rows;  --Esto especifica con qué se va a borrar nuestra tabla temporal
+                          --En este caso se borran las fila con un COMMIT
+
+
+INSERT INTO tablaTemporal (Nombre, Email, aPaterno) VALUES ('Diego Arturo', 'ahaha@ggg.com', 'Bernal');
+
+SELECT * FROM tablaTemporal;
+
+COMMIT;
+
+TRUNCATE TABLE prebe; --Borra las filas de la tabla
+
+DROP TABLE prebe; --Borra toda la tabla
+
+
+      /*COLUMNAS*/
+CREATE TABLE promedio (
+  calif1 NUMBER(4,2),
+  calif2 NUMBER(4,2),
+  calif3 NUMBER(4,2),
+  promedio AS (
+    (calif1 + calif2 + calif3)/3) VIRTUAL     --Estamos creando la columna virtual de "promedio"
+);                                            -- En oracle no se puede sacar una columna virtual
+                                              -- a partir de otra columna virtual.
+INSERT INTO promedio (calif1, calif2, calif3) VALUES (4.0, 5.9, 9.0);
+
+
+
+      /*VALORES DEFAULT EN COLUMNA*/
+CREATE TABLE producto(
+  id NUMBER(10,0),
+  tipo CHAR(1) DEFAULT 'A',
+  nombre VARCHAR(20) NOT NULL,
+  fechaCreacion DATE DEFAULT SYSDATE
+);
+
+INSERT INTO producto (id, nombre) VALUES (1, 'clorox'); --Expresión explícita
+
+INSERT INTO producto (id, tipo, nombre, fechaCreacion) VALUES (2, 'b', 'mouse', TO_DATE('11/03/2018 12:00:00', 'dd/mm/yyyy hh24:mi:ss'));
+
+
+      /*CONSTRAINTS*/
+
+CREATE TABLE concepto_pago (
+  concepto_id NUMERIC(10, 0)
+    CONSTRAINT concepto_pago_pk PRIMARY KEY,
+  tipo_concepto CHAR(1) NOT NULL
+    CONSTRAINT cp_tipo_concepto_chk CHECK (
+      tipo_concepto IN ('A', 'B', 'C')),
+  clave VARCHAR(3) NOT NULL
+    CONSTRAINT cp_clave_uk UNIQUE,
+  descripcion VARCHAR(255),
+  importe NUMERIC(8, 2) NOT NULL
+);

@@ -1,0 +1,72 @@
+CREATE TABLE Doctor (
+  id_doctor NUMBER(4) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE Doctor ADD Nombre VARCHAR2(30);
+ALTER TABLE Doctor ADD Edad VARCHAR2(2);
+
+INSERT INTO Doctor VALUES (1, 'Juan', '34');  --Es una inserción EXPLÍCITA porque no le escribo los atributos pero le tengo que pero pongo todos los valores de las columnas.
+INSERT INTO Doctor VALUES (2, 'Pedro', '30');
+INSERT INTO Doctor VALUES (3, 'Luis', '28');
+INSERT INTO Doctor VALUES (4, 'Felipe', '31');
+INSERT INTO Doctor VALUES (5, 'Jorge', '28');
+
+ALTER TABLE Doctor ADD CONSTRAINT ckh_d_edad CHECK (EDAD != '0');
+
+INSERT INTO Doctor VALUES (6, 'Jorge', '0');
+
+
+CREATE TABLE Paciente (
+  id_paciente NUMBER(10),
+  Nombre VARCHAR2(30),
+  Malestar VARCHAR2(30),
+  Altura  NUMBER(3,2),
+  Peso NUMBER(4,2),
+  id_doctor NUMBER(4)
+  CONSTRAINT p_id_paciente_pk PRIMARY KEY (id_paciente)
+);
+
+--Crear una llave foranea desde fuera
+ALTER TABLE Paciente ADD
+CONSTRAINT id_doctor_fk
+FOREIGN KEY (id_doctor)
+REFERENCES Doctor(id_doctor);
+
+/*SECUENCIAS:
+CREATE SEQUENCE secuencia --Sentencia y nombre de la Sentencia
+INCREMENT BY n  --Definimos el autoincremento
+START WITH n  --Definimos en qué valor va a iniciar
+MAXVALUE n | NOMAXVALUE  --Definimos el máximo valor hasta el que va a llegar.
+MINVALUE n | NOMINVALUE  --Valor mínimo (sirve para cuando se reinicia). Si no tiene MINVALUE, va a reiniciar en 1.
+CYCLE | NOCYCLE --Cuando llegue al valor máximo, se reinicia la secuencia o se detiene
+CAHCE n| NOCACHE --Se guarda o no el valor en memoria
+;
+*/
+--Crear una secuencia:
+CREATE SEQUENCE secuencia
+INCREMENT BY 2
+START WITH 5  --porque ya tenia los 4 primeros id's en la tabla Doctor
+MAXVALUE 11
+MINVALUE 3
+CYCLE
+NOCACHE;
+
+INSERT INTO Doctor VALUES (secuencia.NEXTVAL, 'Nombre1', '30');
+INSERT INTO Doctor VALUES (secuencia.NEXTVAL, 'Nombre2', '31');
+INSERT INTO Doctor VALUES (secuencia.NEXTVAL, 'Nombre3', '33');
+
+--NEXTVAL   Regresa el valor del siguiente elemento de la secuencia
+--CURRVAL    Regresa el último valor de la SECUENCIAS
+
+SELECT secuencia.CURRVAL FROM DUAL;
+
+
+--UPDATE Doctor SET Nombre = 'Juan', Edad = '30' WHERE id_doctor = secuencia.CURRVAL;
+UPDATE Doctor SET Nombre = 'Juan', Edad = '30' WHERE id_doctor = 11;
+
+DELETE FROM Doctor WHERE id_doctor > 5;
+SELECT * FROM Doctor;
+
+TRUNCATE TABLE Doctor;
+-- Me marca error porque tengo llaves primarias y foránes
+--Por lo tanto debo borrar (o deshabilitar) los CONSTRAINTS
